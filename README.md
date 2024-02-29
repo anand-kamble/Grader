@@ -1,0 +1,2 @@
+## Installed packages using
+`pip install -U langchain openai ragas arxiv pymupdf chromadb tiktoken accelerate bitsandbytes datasets sentence_transformers FlagEmbedding ninja  tqdm rank_bm25 transformers`
