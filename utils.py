@@ -1,3 +1,4 @@
+""" This module contains utility functions for the project. """
 import os
 
 def list_files(directory):
