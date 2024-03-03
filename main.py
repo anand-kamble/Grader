@@ -49,8 +49,6 @@ hf_bge_embeddings = HuggingFaceBgeEmbeddings(
     model_name=model_name, 
     model_kwargs={"device": "cuda"}, 
     encode_kwargs=encode_kwargs,
-    api_key="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"
-    
 )
 # %%
 text_splitter = RecursiveCharacterTextSplitter(
