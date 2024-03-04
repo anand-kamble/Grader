@@ -1,5 +1,9 @@
-## Installed packages using
-`pip install -U langchain openai ragas arxiv pymupdf chromadb tiktoken accelerate bitsandbytes datasets sentence_transformers FlagEmbedding ninja  tqdm rank_bm25 transformers`
+<!-- ## Installed packages using
+`pip install -U langchain openai ragas arxiv pymupdf chromadb tiktoken accelerate bitsandbytes datasets sentence_transformers FlagEmbedding ninja  tqdm rank_bm25 transformers` -->
+# Auto Grader
+
+## Create a conda env using the yaml file.
+`conda env create environment.yml`
 
 ## VSCode extension
 I would recommend installing the following extension for linting.
