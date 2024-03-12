@@ -1,13 +1,11 @@
-
-
 # %%############## IMPORTS ################
 from langchain.llms import llamacpp
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
-
+from utils import Models, list_files
 
 # %%############## LLM ################
-llm = llamacpp.LlamaCpp(model_path=MODEL_DIR + MODEL_NAME)
+llm = llamacpp.LlamaCpp(model_path=Models.MISTRAL.value)
 
 # %%############## PROMPT ################
 template = """
@@ -19,14 +17,14 @@ rate the following answer on a scale of 1 to 10, where 1 is the worst and 10 is 
 
 prompt = PromptTemplate(
     template=template,
-    input_variables=["answer","question"],
+    input_variables=["answer", "question"],
 )
 
 # %%############## LLM CHECK ################
 llm(
     prompt.format(
         answer="K-means is a clustering algorithm that divides the data into K clusters",
-        question="What is K-means?"
+        question="What is K-means?",
     )
 )
 
