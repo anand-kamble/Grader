@@ -32,7 +32,6 @@ llamaEmed = LlamaCppEmbeddings(seed=100, model_path=Models.MISTRAL.value)
 template = """
 You are a professor of graduate level course data mining.
 The question asked is: `{question}`
-context:{context}
 rate the following answer on a scale of 1 to 10, where 1 is the worst and 10 is the best:
 `{answer}`
 Give answer in format: Rating = x/10
@@ -40,7 +39,7 @@ Give answer in format: Rating = x/10
 
 prompt = PromptTemplate(
     template=template,
-    input_variables=["answer", "question", "context"],
+    input_variables=["answer", "question"],
 )
 
 # %%############## MAKING THE CONTEXT STRING ################
@@ -75,16 +74,21 @@ qa = RetrievalQA.from_chain_type(
 )
 
 # take around 112 sec to run on classroom machine.
-qa.invoke("Explain everything in one line")
+# qa.invoke("Explain everything in one line")
+
+question = "Is K-means a clustering method?"
+answer = "K-means is not a clustering method"
+qa.run(answer=answer, question=question)
+
 
 # Using map_reduce to reduce the number of tokens needed.
 
 # %%
 
-query = "Give answer in format: Rating = x/10"
-question = "Is K-means a clustering method?"
-answer = "K-means is not a clustering method"
-result = qa({"query": query, "question": question})
-print(result["result"])
+# query = "Give answer in format: Rating = x/10"
+# question = "Is K-means a clustering method?"
+# answer = "K-means is not a clustering method"
+# result = qa({"query": query, "question": question})
+# print(result["result"])
 
 # %%
