@@ -9,7 +9,7 @@ from langchain_community.embeddings import LlamaCppEmbeddings
 from utils import Models, list_files
 
 # %%############## LLM ################
-llm = llamacpp.LlamaCpp(model_path=Models.MISTRAL.value)
+llm = llamacpp.LlamaCpp(model_path=Models.MISTRAL.value, n_ctx=2048, f16_kv=True)
 
 # %%############## DATA FROM PDF ################
 DATA_ROOT = "../data/"
@@ -40,44 +40,51 @@ Give answer in format: Rating = x/10
 
 prompt = PromptTemplate(
     template=template,
-    input_variables=["answer", "question"],
+    input_variables=["answer", "question", "context"],
 )
 
 # %%############## MAKING THE CONTEXT STRING ################
-text_splitter = RecursiveCharacterTextSplitter()
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=256, chunk_overlap=20)
 docs = text_splitter.split_documents(splitData)
 vec_store = Chroma.from_documents(splitData, llamaEmed)
-base_retriever = vec_store.as_retriever(kwargs={"k": 5})
+base_retriever = vec_store.as_retriever()
 
-relevant_part = base_retriever.get_relevant_documents("What is k-means?")
-context_filter = [
-    "Introduction to Data Mining",
-    "2nd Edition",
-    "Tan, Steinbach, Karpatne, Kumar" "3/24/2021",
-]
+# relevant_part = base_retriever.get_relevant_documents("What is k-means?")
+# context_filter = [
+#     "Introduction to Data Mining",
+#     "2nd Edition",
+#     "Tan, Steinbach, Karpatne, Kumar" "3/24/2021",
+# ]
 
-context_str = ""
+# context_str = ""
 
-for r in relevant_part:
-    for f in context_filter:
-        r.page_content = r.page_content.replace(f, "")
-    context_str = context_str + r.page_content
+# for r in relevant_part:
+#     for f in context_filter:
+#         r.page_content = r.page_content.replace(f, "")
+#     context_str = context_str + r.page_content
 
+# %%
+# llamaEmed.embed_documents(texts=[context_str])
+# https://api.python.langchain.com/en/latest/chains/langchain.chains.conversational_retrieval.base.ConversationalRetrievalChain.html
+from langchain.chains import LLMChain, RetrievalQA
 
-# %%############## LLM ################
-llm(
-    prompt.format(
-        answer="K-means is a clustering algorithm that divides the data into K clusters",
-        question="What is K-means?",
-        context=context_str,
-    )
+chain = LLMChain(llm=llm, prompt=prompt)
+# https://api.python.langchain.com/en/latest/chains/langchain.chains.retrieval_qa.base.RetrievalQA.html
+qa = RetrievalQA.from_chain_type(
+    llm=llm, chain_type="map_reduce", retriever=base_retriever
 )
 
+# take around 112 sec to run on classroom machine.
+qa.invoke("Explain everything in one line")
 
-# %%############## CHAIN 1 ################
-first_chain = LLMChain(
-    llm=llm,
-    prompt=prompt,
-)
+# Using map_reduce to reduce the number of tokens needed.
+
+# %%
+
+query = "Give answer in format: Rating = x/10"
+question = "Is K-means a clustering method?"
+answer = "K-means is not a clustering method"
+result = qa({"query": query, "question": question})
+print(result["result"])
 
 # %%
